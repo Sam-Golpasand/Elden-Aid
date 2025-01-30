@@ -83,15 +83,15 @@ class Playstyle {
             scale.name.includes(Scale) &&
             (scale.scaling.includes("C") || scale.scaling.includes("B"))
           ) {
-            console.log(`A good weapon you can use is the ${item.name}
-              \n\nDescription:\n${item.description}
-              \n\nAttack:\n${JSON.stringify(item.attack)}
-              \n\nDefence\n${JSON.stringify(item.defence)}
-              \n\nRequired attributes:\n${JSON.stringify(item.requiredAttributes)}
-              \n\nScales with:\n${JSON.stringify(item.scalesWith)}\n\n`);
-              
+            console.log(`A good weapon you can use is the ${item.name}\n
+            \nDescription:\n${item.description}
+              \n\nAttack:\n${item.attack.map((atk) => atk.name + " " + atk.amount + "\n")}
+              \nDefence\n${item.defence.map((defence) => defence.name + " " + defence.amount + "\n")}
+              \n\nRequired attributes:\n${item.requiredAttributes.map((req) => req.name + " " + req.amount + "\n")}
+              \n\nScales with:\n${item.scalesWith.map((scale) => scale.name + " " + scale.scaling)}\n`);
+
             amount += 1;
-          } else {}
+          } else { }
         });
       });
     } finally {
@@ -164,6 +164,7 @@ class IntDexBuild extends Playstyle {
   }
 }
 
+//Death Intelligence build
 class DeaIntBuild extends Playstyle {
   constructor() {
     super({
@@ -183,6 +184,7 @@ class DeaIntBuild extends Playstyle {
   }
 }
 
+//Frost intelligence build
 class FroIntBuild extends Playstyle {
   constructor() {
     super({
@@ -218,4 +220,4 @@ init();
 
 const strBuild = new StrBuild();
 const dexBuild = new DexBuild();
-dexBuild.SuggestedWeapons();
+strBuild.SuggestedWeapons();
