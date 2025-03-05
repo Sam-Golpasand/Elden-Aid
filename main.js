@@ -1,5 +1,7 @@
+// Importing axios for making HTTP requests
 import axios from "axios";
 
+// Player class to represent a player in the game
 class Player {
   name;
   level;
@@ -13,8 +15,10 @@ class Player {
     this.stats = stats;
   }
 
+  // Static method to create a new player instance
   static async create(name, level, base) {
     try {
+      // Fetching class data from the API
       const response = await axios.get(
         "https://eldenring.fanapis.com/api/classes"
       );
@@ -31,20 +35,24 @@ class Player {
 
       return new Player(name, level, base, stats);
     } catch (error) {
+      // Handling errors
       console.error("Failed to create player:", error.message);
       throw error;
     }
   }
 
+  // Method to introduce the player
   introduce() {
     console.log(`I am ${this.name}, a level ${this.level} ${this.base}`);
   }
 
+  // Method to display player's stats
   showStats() {
-    console.log("Stats:", this.stats);
+    console.log("Stats:", JSON.stringify(this.stats, null, 2));
   }
 }
 
+// Playstyle class to represent different playstyles
 class Playstyle {
   statWeights;
 
@@ -55,25 +63,19 @@ class Playstyle {
   applyStats(player) {
     player.stats.vigor += Math.round(player.level * this.statWeights.vigor);
     player.stats.mind += Math.round(player.level * this.statWeights.mind);
-    player.stats.endurance += Math.round(
-      player.level * this.statWeights.endurance
-    );
-    player.stats.strength += Math.round(
-      player.level * this.statWeights.strength
-    );
-    player.stats.dexterity += Math.round(
-      player.level * this.statWeights.dexterity
-    );
-    player.stats.intelligence += Math.round(
-      player.level * this.statWeights.intelligence
-    );
+    player.stats.endurance += Math.round(player.level * this.statWeights.endurance);
+    player.stats.strength += Math.round(player.level * this.statWeights.strength);
+    player.stats.dexterity += Math.round(player.level * this.statWeights.dexterity);
+    player.stats.intelligence += Math.round(player.level * this.statWeights.intelligence);
     player.stats.faith += Math.round(player.level * this.statWeights.faith);
     player.stats.arcane += Math.round(player.level * this.statWeights.arcane);
   }
 
+  // Method to suggest weapons based on scaling
   async SuggestedWeapons(Scale) {
     let amount = 0;
     try {
+      // Fetching weapon data from the API
       const response = await axios.get(
         "https://eldenring.fanapis.com/api/weapons"
       );
@@ -84,17 +86,27 @@ class Playstyle {
             (scale.scaling.includes("C") || scale.scaling.includes("B"))
           ) {
             console.log(`A good weapon you can use is the ${item.name}\n
-            \nDescription:\n${item.description}
-              \n\nAttack:\n${item.attack.map((atk) => atk.name + " " + atk.amount + "\n")}
-              \nDefence\n${item.defence.map((defence) => defence.name + " " + defence.amount + "\n")}
-              \n\nRequired attributes:\n${item.requiredAttributes.map((req) => req.name + " " + req.amount + "\n")}
-              \n\nScales with:\n${item.scalesWith.map((scale) => scale.name + " " + scale.scaling)}\n`);
+            Description:
+            ${item.description}
 
+            Attack:
+            ${item.attack.map((atk) => `${atk.name}: ${atk.amount}`).join(", ")}
+
+            Defence:
+            ${item.defence.map((def) => `${def.name}: ${def.amount}`).join(", ")}
+
+            Required attributes:
+            ${item.requiredAttributes.map((req) => `${req.name}: ${req.amount}`).join(", ")}
+
+            Scales with:
+            ${item.scalesWith.map((scale) => `${scale.name}: ${scale.scaling}`).join(", ")}
+            `);
             amount += 1;
-          } else { }
+          }
         });
       });
     } finally {
+      // Handling case when no weapons are found
       if (amount === 0) {
         console.log("No weapons found");
       } else {
@@ -104,6 +116,7 @@ class Playstyle {
   }
 }
 
+// Strength build class
 class StrBuild extends Playstyle {
   constructor() {
     super({
@@ -118,11 +131,13 @@ class StrBuild extends Playstyle {
     });
   }
 
+  // Method to suggest weapons for strength build
   SuggestedWeapons() {
     super.SuggestedWeapons("Str");
   }
 }
 
+// Dexterity build class
 class DexBuild extends Playstyle {
   constructor() {
     super({
@@ -137,11 +152,13 @@ class DexBuild extends Playstyle {
     });
   }
 
+  // Method to suggest weapons for dexterity build
   SuggestedWeapons() {
     super.SuggestedWeapons("Dex");
   }
 }
 
+// Intelligence and Dexterity build class
 class IntDexBuild extends Playstyle {
   constructor() {
     super({
@@ -156,6 +173,7 @@ class IntDexBuild extends Playstyle {
     });
   }
 
+  // Method to suggest weapons for intelligence and dexterity build
   SuggestedWeapons() {
     super.SuggestedWeapons("Int");
   }
@@ -164,7 +182,7 @@ class IntDexBuild extends Playstyle {
   }
 }
 
-//Death Intelligence build
+// Death Intelligence build class
 class DeaIntBuild extends Playstyle {
   constructor() {
     super({
@@ -179,12 +197,13 @@ class DeaIntBuild extends Playstyle {
     });
   }
 
+  // Method to suggest weapons for death intelligence build
   SuggestedWeapons() {
     super.SuggestedWeapons("Int");
   }
 }
 
-//Frost intelligence build
+// Frost Intelligence build class
 class FroIntBuild extends Playstyle {
   constructor() {
     super({
@@ -199,11 +218,13 @@ class FroIntBuild extends Playstyle {
     });
   }
 
+  // Method to suggest weapons for frost intelligence build
   SuggestedWeapons() {
     super.SuggestedWeapons("Int");
   }
 }
 
+// Initialization function to create a player and apply a build
 async function init() {
   try {
     const player = await Player.create("Li Yiu", 20, "Hero");
@@ -218,6 +239,8 @@ async function init() {
 
 init();
 
+// Creating instances of builds and suggesting weapons
 const strBuild = new StrBuild();
 const dexBuild = new DexBuild();
 strBuild.SuggestedWeapons();
+dexBuild.SuggestedWeapons();
